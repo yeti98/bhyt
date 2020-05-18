@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Input clearable :autofocus="true" placeholder="Họ tên/Số thẻ/CMND/Nơi ĐKKCBBĐ" style="width: 300px" v-model="searchText"/>
+        <Input ref="searchInput" clearable :autofocus="true" placeholder="Họ tên/Số thẻ/CMND/Nơi ĐKKCBBĐ" style="width: 300px" v-model="searchText"/>
         <Table :columns="tableHeaders" :data="bills" :loading="loading" :no-data-text="`Không có dữ liệu`"
                :no-filtered-data-text="`Không có dữ liệu phù hợp`"
                :show-summary="true" :summary-method="handleSummary" border
@@ -60,7 +60,8 @@
           {
             title: 'Nhóm',
             key: 'category',
-            sortable: true
+            sortable: true,
+            width: 400,
           },
           {
             title: 'Nơi ĐKKCBBĐ',
@@ -201,9 +202,21 @@
       async getBillData() {
         this.loading = true;
         const res = await BillRepository.getAllBills();
-        if (res.status === 200) {
-          this.originData = res.data._embedded.bills;
-          this.bills = res.data._embedded.bills;
+        if (res.status < 200 || res.status > 299) {
+          this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+        } else {
+          this.originData = []
+          this.bills = []
+          for (const value of res.data._embedded.bills) {
+            const cateRes = await BillRepository.getCategoryByBillID(value.id)
+            if (cateRes.status < 200 || cateRes.status > 299) {
+              this.$Message.error(`Vui lòng thử lại! ${cateRes.status}`);
+            } else {
+              value.category = cateRes.data.code + " - " + cateRes.data.name
+            }
+            this.originData.push(value)
+            this.bills.push(value)
+          }
           this.loading = false
         }
       },
@@ -219,6 +232,9 @@
     },
     created() {
 
+    },
+    activated() {
+      this.$refs.searchInput.focus()
     }
   }
 </script>

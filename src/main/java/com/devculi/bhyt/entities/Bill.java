@@ -1,15 +1,12 @@
 package com.devculi.bhyt.entities;
 
-import com.devculi.bhyt.enums.CalculatorType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -24,32 +21,32 @@ public class Bill {
     private Long id;
     @OneToOne
     private Category category;
+    @Column(updatable = false, nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime timeStamp;
+    @Column(updatable = false, nullable = false)
     private double amount;
-    @Enumerated(EnumType.STRING)
-    private CalculatorType type;
     @OneToOne
     private User user;
+    @Column(nullable = false)
     private String name;
-    @NotNull
-    @Column(updatable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String personalID;
-    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dateOfBirth;
-    @NotNull
+    @Column(nullable = false)
     private String gender;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    @Column(updatable = false)
+    @Column(updatable = false, nullable = false)
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    @Column(updatable = false)
+    @Column(updatable = false, nullable = false)
     private LocalDate expiryDate;
+    @Column(nullable = false)
     private String firstRegistrationPlace;
-    @NotNull
-    @Column(updatable = false, unique = true)
-    @Size(min = 1, max = 20, message = "Mã có độ dài từ 1 đến 50 ký tự")
+    @Column(updatable = false, unique = true, nullable = false)
     private String code;
+    @Column(nullable = false)
     private double baseSalary;
 }
 

@@ -1,32 +1,33 @@
 package com.devculi.bhyt.entities;
 
-import com.sun.istack.NotNull;
+import com.devculi.bhyt.enums.CalculatorType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
-    @Column(updatable = false, unique = true)
-    @Size(min = 1, max = 20, message = "Mã có độ dài từ 1 đến 50 ký tự")
+    @Column(updatable = false, unique = true, nullable = false)
     private String code;
-    @NotNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
-    @NotNull
+    @Column(nullable = false)
     private double value;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CalculatorType type;
     private String valueDescription;
-    private double minValue;
+    @Column(nullable = true)
+    private Double minSupportedPercent;
+    @Column(nullable = true)
+    private Double defaultBaseSalary;
 }

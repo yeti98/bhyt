@@ -8,5 +8,11 @@ const categoryRepository = Repository;
 export default {
   fetchCategories(){
     return categoryRepository.get(`${resource}`);
+  },
+  insertCategory(category){
+    return categoryRepository.post(`${resource}/`, category);
+  },
+  updateCategory(cateID, category){
+    return categoryRepository.put(`${resource}/${cateID}`, category);
   }
 };
