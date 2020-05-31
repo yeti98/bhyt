@@ -1,6 +1,8 @@
 <template>
     <div>
         <p><b>Quản lý nhóm tham gia BHYT</b></p>
+        <Button @click="handleAddGroup" icon="md-add" long style="width: 15%; margin: 1%" type="dashed">Thêm nhóm
+        </Button>
         <div style="margin: 1%">
             <Table :columns="headers" :data="categories" :loading="loading" :no-data-text="`Không có dữ liệu`"
                    :no-filtered-data-text="`Không có dữ liệu phù hợp`"
@@ -14,8 +16,6 @@
                 </template>
             </Table>
         </div>
-        <Button @click="handleAddGroup" icon="md-add" long style="width: 15%; margin: 1%" type="dashed">Thêm nhóm
-        </Button>
     </div>
 </template>
 
