@@ -19,7 +19,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     @Transactional(rollbackFor = Exception.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (alreadySetup) return;
-        settingService.readConfig();
+//        settingService.readConfig();
         alreadySetup = true;
     }
 }

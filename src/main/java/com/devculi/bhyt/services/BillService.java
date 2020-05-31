@@ -49,8 +49,8 @@ public class BillService {
         if (bills.size() > 0) {
             Double totalMoney = bills.stream().mapToDouble(Bill::getAmount).sum();
             Map khcn = statisticByCode(bills, "CN_", totalMoney);
-            Map khhgd = statisticByCode(bills, "DN_", totalMoney);
-            Map khdn = statisticByCode(bills, "HGD_", totalMoney);
+            Map khdn = statisticByCode(bills, "DN_", totalMoney);
+            Map khhgd = statisticByCode(bills, "HGĐ_", totalMoney);
             khcn.put("type", "Cá Nhân");
             khdn.put("type", "Doanh Nghiệp");
             khhgd.put("type", "Hộ Gia Đình");
@@ -70,7 +70,8 @@ public class BillService {
         data.put("size", validList.size());
         data.put("money", validMoney);
         data.put("moneyPercentage", toPercent((validMoney / totalMoney)));
-        data.put("sizePercentage", toPercent((double) (validList.size() / bills.size())));
+        Double sizePercent = Double.valueOf(validList.size()) / Double.valueOf(bills.size());
+        data.put("sizePercentage", toPercent(sizePercent));
         return data;
     }
     private Double toPercent(Double num){

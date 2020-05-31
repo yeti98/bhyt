@@ -38,7 +38,8 @@
           {
             title: 'Mã nhóm',
             key: 'code',
-            width: 100
+            width: 100,
+            sortable: true
           },
           {
             title: 'Tên nhóm',
@@ -46,15 +47,17 @@
           },
           {
             title: 'Giá trị (%)',
-            key: 'value'
+            key: 'value',
+              width: 100
           },
           {
             title: 'Mô tả',
             key: 'valueDescription'
           },
           {
-            title: 'Giới hạn dưới',
-            key: 'minSupportedPercent'
+            title: 'Cách tính',
+            key: 'type',
+              width: 150
           },
           {
             title: '#',
@@ -69,6 +72,7 @@
     methods: {
       initNewGroup() {
         return {
+            id: undefined,
           code: "",
           name: "",
           type: "BY_PERCENT",
@@ -112,8 +116,28 @@
         })
       },
       remove(index) {
-        this.categories.splice(index, 1);
+          this.$Modal.confirm({
+              okText: 'Ok',
+              cancelText: 'Không xóa',
+              scrollable: true,
+              closable: true,
+              title: 'Xóa bản ghi',
+              onOk: () => {
+                  this.handleRemoveGroup(index);
+              },
+              content: `Bạn có muốn xóa bản ghi ${this.categories[index].code} ?`
+          })
       },
+        async handleRemoveGroup(index) {
+            this.loading = true;
+            const res = await GroupRepository.deleteCategory(this.categories[index].id);
+            if (res.status < 200 || res.status > 299) {
+                this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+            } else {
+                this.categories.splice(index, 1);
+                this.loading = false;
+            }
+        },
       handleAddGroup() {
         this.$Modal.info({
           okText: 'Đóng',
@@ -128,7 +152,8 @@
                 isNew: true
               },
               on: {
-                'insertGroupSuccess': () => {
+                'insertGroupSuccess': (payload) => {
+                    this.newGroup.id = payload.id
                   this.categories.push(this.newGroup);
                   this.newGroup = this.initNewGroup();
                 }

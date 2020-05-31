@@ -14,7 +14,10 @@ export default {
   },
   analyzeBills(startDate, endDate){
     return billRepository.get(`${resource}/analyzer/?start=${startDate}&end=${endDate}`)
-  }
+  },
+  deleteBill(id){
+    return billRepository.delete(`${resource}/${id}`)
+  },
   // getUserById(userId) {
   //   return billRepository.get(`${resource}/${userId}`);
   // },

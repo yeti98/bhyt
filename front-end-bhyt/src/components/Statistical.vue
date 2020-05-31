@@ -1,12 +1,12 @@
 <template>
     <div>
         <DatePicker ref="datepick" format="dd/MM/yyyy" :options="options2" placeholder="Chọn ngày" placement="bottom-end" style="width: 400px"
-                   type="daterange"></DatePicker>
-        <Button @click="onClickStatis" type="primary">
+                   type="daterange" v-model="dateRange"></DatePicker>
+        <Button :disabled="dateRange[0]==='' || dateRange[1]===''" @click="onClickStatis" type="primary">
             Thống kê
         </Button>
         <Table :columns="tableHeaders" :data="data" :loading="loading" :no-data-text="`Không có dữ liệu`"
-               :no-filtered-data-text="`Không có dữ liệu phù hợp`"
+               :no-filtered-data-text="`Không có dữ liệu phù hợp`" context-menu
                :show-summary="true" :summary-method="handleSummary" border
                ref="table"
         ></Table>
@@ -21,8 +21,9 @@
     data() {
       return {
         loading: false,
-        startDate: Date(),
-        endDate: Date(),
+        startDate: undefined,
+        endDate: undefined,
+        dateRange: [],
         tableHeaders: [
           {
             title: 'Loại KH',
@@ -86,6 +87,10 @@
       async onClickStatis() {
         this.startDate = this.$refs.datepick.$data.internalValue[0]
         this.endDate = this.$refs.datepick.$data.internalValue[1]
+        if (!this.startDate) {
+            this.$Message.error("Vui lòng chọn khoảng thời gian")
+            return;
+        }
         const res = await BillRepository.analyzeBills(this.startDate.getTime(), this.endDate.getTime())
         if (res.status < 200 || res.status > 299) {
           this.$Message.error(`Vui lòng thử lại! ${res.status}`);
@@ -133,7 +138,14 @@
         });
         return sums;
       }
-    }
+    },
+      mounted() {
+          window.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                  this.onClickStatis();
+              }
+          });
+      }
   }
 </script>
 

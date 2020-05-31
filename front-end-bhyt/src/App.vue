@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <Login v-if="!isAuthenticated"></Login>
+    <div style="padding: 20%;" v-if="showLogin">
+      <Login @LoggedIn="showLogin=!showLogin"></Login>
+    </div>
     <DashBoard v-else></DashBoard>
   </div>
 </template>
@@ -16,9 +18,9 @@ export default {
   },
   data () {
     return {
-      isAuthenticated: this.$store.getters.isLoggedIn
+        showLogin: true
     }
-  }
+  },
 }
 </script>
 

@@ -5,15 +5,14 @@
                 <p>{{group.code}}</p>
             </FormItem>
             <FormItem label="Mã nhóm" prop="code" v-else>
-                <Input number type="text" v-model="group.code"></Input>
+                <Input number type="text" v-model="group.code" ref="focusCode"></Input>
             </FormItem>
             <FormItem label="Tên nhóm" prop="name">
-                <Input number type="text" v-model="group.name"></Input>
+                <Input number type="text" v-model="group.name" ref="focusName"></Input>
             </FormItem>
             <FormItem label="Cách tính bảo hiểm" prop="type">
                 <CalculatorType :selected="group.type" @changeCalcType="updateCalcType"></CalculatorType>
             </FormItem>
-            {{group.type}} - {{group.defaultBaseSalary}}
             <FormItem :label="`Giá trị (${this.customValue} - 100 %)`" prop="value">
                 <InputNumber :min="customValue" v-model="group.value"></InputNumber>
             </FormItem>
@@ -85,6 +84,9 @@
         if (calcType === 'SUPPORTED') {
           this.group.minSupportedPercent = this.group.minSupportedPercent || 0;
           this.group.defaultBaseSalary = this.group.defaultBaseSalary || 0
+        } else {
+            this.group.minSupportedPercent = 0;
+            this.group.defaultBaseSalary = 0
         }
         this.group.type = calcType
       },
@@ -117,7 +119,7 @@
           this.$Message.error(`Vui lòng thử lại! ${res.status}`);
         } else {
           this.$Message.success('Thành công!');
-          this.$emit('insertGroupSuccess')
+          this.$emit('insertGroupSuccess', res.data)
           this.$Modal.remove();
         }
       }
@@ -136,10 +138,14 @@
     mounted() {
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-          console.log("ENter")
           this.handleSubmit('tblGroup');
         }
       });
+      if (this.isNew) {
+          this.$refs.focusCode.focus()
+      } else {
+          this.$refs.focusName.focus()
+      }
     }
   }
 </script>

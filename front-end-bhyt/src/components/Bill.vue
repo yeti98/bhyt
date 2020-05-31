@@ -194,14 +194,26 @@
           closable: true,
           title: 'Xóa bản ghi',
           onOk: () => {
+            this.handleRemoveBill(index);
             this.bills.splice(index, 1)
           },
-          content: `Bạn có muốn xóa bản ghi ${this.bills[index].id} ?`
+          content: `Bạn có muốn xóa bản ghi ${this.bills[index].code} - ${this.bills[index].name} ?`
         })
+      },
+      async handleRemoveBill(index) {
+          this.loading = true;
+          const res = await BillRepository.deleteBill(this.bills[index].id);
+          if (res.status < 200 || res.status > 299) {
+              this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+          } else {
+              this.bills.splice(index, 1);
+              this.loading = false;
+          }
       },
       async getBillData() {
         this.loading = true;
         const res = await BillRepository.getAllBills();
+        console.log(res)
         if (res.status < 200 || res.status > 299) {
           this.$Message.error(`Vui lòng thử lại! ${res.status}`);
         } else {

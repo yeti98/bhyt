@@ -14,5 +14,8 @@ export default {
   },
   updateCategory(cateID, category){
     return categoryRepository.put(`${resource}/${cateID}`, category);
-  }
+  },
+  deleteCategory(cateID){
+    return categoryRepository.delete(`${resource}/${cateID}`);
+  },
 };
