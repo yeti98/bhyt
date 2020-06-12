@@ -1,24 +1,30 @@
 <template>
-  <div>
-    <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
-      <FormItem prop="user">
-        <Input autofocus type="text" v-model="formInline.user" placeholder="email@example.com">
-          <Icon type="ios-person-outline" slot="prepend"></Icon>
-        </Input>
-      </FormItem>
-      <FormItem prop="password">
-        <Input type="password" v-model="formInline.password" placeholder="Mật khẩu">
-          <Icon type="ios-lock-outline" slot="prepend"></Icon>
-        </Input>
-      </FormItem>
-      <FormItem>
-        <Button type="primary" @click="handleSubmit('formInline')">Đăng nhập</Button>
-      </FormItem>
-    </Form>
-  </div>
+	<div>
+		<Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
+			<FormItem prop="user">
+				<Input autofocus type="text" v-model="formInline.user" placeholder="email@example.com">
+					<Icon type="ios-person-outline" slot="prepend"></Icon>
+				</Input>
+			</FormItem>
+			<FormItem prop="password">
+				<Input type="password" v-model="formInline.password" placeholder="Mật khẩu">
+					<Icon type="ios-lock-outline" slot="prepend"></Icon>
+				</Input>
+			</FormItem>
+			<FormItem>
+				<Button type="primary" @click="handleSubmit('formInline')">Đăng nhập</Button>
+			</FormItem>
+		</Form>
+	</div>
 </template>
 <script>
     import {RepositoryFactory} from '@/repositories/RepositoryFactory'
+    import {
+        ON_INVALID_DATA,
+        ON_LOGIN_FAIL,
+        ON_NOINTERNET_CONNECTION,
+        ON_SUCCESS_MESSAGE
+    } from "../javascript/api_messages";
 
     const AuthRepository = RepositoryFactory.get('auth');
     export default {
@@ -46,33 +52,37 @@
                     if (valid) {
                         this.login();
                     } else {
-                        this.$Message.error('Dữ liệu chưa hợp lệ!');
+                        this.$Message.error(ON_INVALID_DATA);
                     }
                 })
             },
-            login: async function () {
+            login: function () {
                 let email = this.formInline.user
                 let password = this.formInline.password
-                if (email==='admin@gmail.com' && password==="123456") {
-                    this.$emit("LoggedIn", email)
-                    this.$Message.success('Thành công');
-                    // this.$store.dispatch('login', {email, password})
-                    //     .then(() => this.$emit("LoggedIn", email))
-                    //     .catch(err => console.log(err))
+                this.$store.dispatch("login", {email, password})
+                    .then(() => {
+                            this.$Message.success(ON_SUCCESS_MESSAGE);
+                        }
+                    )
+                    .catch(err => {
+                        if (err.response.status === 403) {
+                            this.$Message.error(ON_LOGIN_FAIL)
+                        } else {
+                            this.$Message.error(ON_NOINTERNET_CONNECTION)
+                        }
+                    });
+            },
+            onEnterKeyPressed(event) {
+                if (event.key === 'Enter') {
+                    this.handleSubmit('formInline');
                 }
-                // const res = await AuthRepository.login({email, password});
-                // console.log(res.data, res.status)
-                // this.$store.dispatch('login', {email, password})
-                //     .then(() => this.$router.push('/'))
-                //     .catch(err => console.log(err))
             }
         },
         mounted() {
-            window.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    this.handleSubmit('formInline');
-                }
-            });
+            window.addEventListener('keydown', this.onEnterKeyPressed);
+        },
+        beforeDestroy() {
+            window.removeEventListener('keydown', this.onEnterKeyPressed)
         }
     }
 </script>

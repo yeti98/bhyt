@@ -22,6 +22,7 @@
 <script>
   import {RepositoryFactory} from '@/repositories/RepositoryFactory'
   import GroupDetail from "./GroupDetail";
+  import {ON_FAILURE_MESSAGE} from "../javascript/api_messages";
 
   const GroupRepository = RepositoryFactory.get('group');
   export default {
@@ -92,7 +93,7 @@
         this.loading = true;
         const res = await GroupRepository.fetchCategories();
         if (res.status < 200 || res.status > 299) {
-          this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+          this.$Message.error(ON_FAILURE_MESSAGE);
         } else {
           this.categories = res.data._embedded.categories;
           this.loading = false
@@ -132,7 +133,7 @@
             this.loading = true;
             const res = await GroupRepository.deleteCategory(this.categories[index].id);
             if (res.status < 200 || res.status > 299) {
-                this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+                this.$Message.error(ON_FAILURE_MESSAGE);
             } else {
                 this.categories.splice(index, 1);
                 this.loading = false;

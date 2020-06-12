@@ -4,7 +4,7 @@
         <Table :columns="tableHeaders" :data="bills" :loading="loading" :no-data-text="`Không có dữ liệu`"
                :no-filtered-data-text="`Không có dữ liệu phù hợp`"
                :show-summary="true" :summary-method="handleSummary" border
-               ref="table"
+               ref="table" highlight-row
         >
         </Table>
         <hr>
@@ -12,11 +12,16 @@
             <Icon type="ios-download-outline"></Icon>
             Xuất file csv
         </Button>
+        <Button @click="printPage" size="large" type="primary">
+            <Icon type="ios-print-outline" />
+            In
+        </Button>
     </div>
 </template>
 <script>
   import {RepositoryFactory} from '@/repositories/RepositoryFactory'
   import BillDetail from "./BillDetail";
+  import {ON_FAILURE_MESSAGE} from "../javascript/api_messages";
 
   const BillRepository = RepositoryFactory.get('bill');
   export default {
@@ -129,6 +134,9 @@
       }
     },
     methods: {
+        printPage(){
+            window.print()
+        },
       handleSummary({columns, data}) {
         const sums = {};
         columns.forEach((column, index) => {
@@ -204,7 +212,7 @@
           this.loading = true;
           const res = await BillRepository.deleteBill(this.bills[index].id);
           if (res.status < 200 || res.status > 299) {
-              this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+              this.$Message.error(ON_FAILURE_MESSAGE);
           } else {
               this.bills.splice(index, 1);
               this.loading = false;
@@ -215,14 +223,14 @@
         const res = await BillRepository.getAllBills();
         console.log(res)
         if (res.status < 200 || res.status > 299) {
-          this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+          this.$Message.error(ON_FAILURE_MESSAGE);
         } else {
           this.originData = []
           this.bills = []
           for (const value of res.data._embedded.bills) {
             const cateRes = await BillRepository.getCategoryByBillID(value.id)
             if (cateRes.status < 200 || cateRes.status > 299) {
-              this.$Message.error(`Vui lòng thử lại! ${cateRes.status}`);
+              this.$Message.error(ON_FAILURE_MESSAGE);
             } else {
               value.category = cateRes.data.code + " - " + cateRes.data.name
             }
@@ -246,7 +254,8 @@
 
     },
     activated() {
-      this.$refs.searchInput.focus()
+        console.log("call activated code");
+        this.$refs.searchInput.focus()
     }
   }
 </script>

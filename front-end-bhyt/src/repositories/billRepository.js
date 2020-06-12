@@ -18,6 +18,9 @@ export default {
   deleteBill(id){
     return billRepository.delete(`${resource}/${id}`)
   },
+  analyzeBillsByYear(range) {
+    return billRepository.get(`${resource}/analyzer/annual?range=${range}`)
+  }
   // getUserById(userId) {
   //   return billRepository.get(`${resource}/${userId}`);
   // },

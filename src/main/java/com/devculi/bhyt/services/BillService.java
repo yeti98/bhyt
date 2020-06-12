@@ -1,23 +1,16 @@
 package com.devculi.bhyt.services;
 
-import com.devculi.bhyt.calc.ByPercentCalculator;
-import com.devculi.bhyt.calc.Calculator;
-import com.devculi.bhyt.calc.FamilyCalculator;
-import com.devculi.bhyt.calc.SupportedCalculator;
-import com.devculi.bhyt.dto.BillDTO;
 import com.devculi.bhyt.entities.Bill;
-import com.devculi.bhyt.enums.CalculatorType;
 import com.devculi.bhyt.repositories.BillRepository;
 import com.devculi.bhyt.repositories.FamilyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class BillService {
@@ -25,24 +18,6 @@ public class BillService {
     FamilyRepository familyRepository;
     @Autowired
     BillRepository billRepository;
-
-    public Calculator getCalculator(CalculatorType calculatorType) {
-        switch (calculatorType) {
-            case BY_PERCENT:
-                return new ByPercentCalculator();
-            case SUPPORTED:
-                return new SupportedCalculator();
-            case FAMILY:
-                return new FamilyCalculator(familyRepository);
-        }
-        return null;
-    }
-
-    public double calcMoney(BillDTO billDTO) {
-        CalculatorType type = billDTO.getType();
-        Calculator calculator = getCalculator(type);
-        return calculator.calculate(billDTO);
-    }
 
     public List buildStatisticalMap(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Bill> bills = billRepository.getAllBetweenDates(startDateTime, endDateTime);
@@ -74,7 +49,30 @@ public class BillService {
         data.put("sizePercentage", toPercent(sizePercent));
         return data;
     }
-    private Double toPercent(Double num){
+
+    private Double toPercent(Double num) {
         return Double.valueOf(Math.round((num + 1E-5) * 100));
+    }
+
+    public List buildStatisticalForYears(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List barChartData = new ArrayList();
+        List<Bill> allBetweenDates = billRepository.getAllBetweenDates(startDateTime, endDateTime);
+        for (int year = startDateTime.getYear(); year <= endDateTime.getYear(); year++) {
+            int finalYear = year;
+            Supplier<Stream<Bill>> sameYearStream = () -> allBetweenDates.stream().filter(bill -> bill.getTimeStamp().getYear() == finalYear);
+            long totalNumberOfBill = sameYearStream.get().count();
+            Double totalIncome = sameYearStream.get().map(bill -> bill.getAmount()).reduce(0.0, Double::sum);
+            Map customerMap = new HashMap();
+            customerMap.put("value", totalNumberOfBill);
+            customerMap.put("name", "Số khách hàng");
+            Map incomeMap = new HashMap();
+            incomeMap.put("value", totalIncome / 1000000);
+            incomeMap.put("name", "Số tiền");
+            Map yearData = new HashMap();
+            yearData.put("year", year);
+            yearData.put("values", Arrays.asList(customerMap, incomeMap));
+            barChartData.add(yearData);
+        }
+        return barChartData;
     }
 }

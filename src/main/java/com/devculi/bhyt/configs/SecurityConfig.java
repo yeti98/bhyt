@@ -29,10 +29,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.userDetailServiceImpl = userDetailServiceImpl;
     }
 
-//    @Bean
-//    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-//        return new JwtAuthenticationFilter();
-//    }
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -48,24 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailServiceImpl).passwordEncoder(passwordEncoder());
-//        auth.authenticationEventPublisher(
-//                new DefaultAuthenticationEventPublisher(appEventPublisher.getApplicationEventPublisher()));
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests().anyRequest().permitAll();
-//        http.authorizeRequests()
-//                .antMatchers("/auth/**")
-//                .permitAll()
-//                .antMatchers("/files/**")
-//                .permitAll()
-//                .antMatchers("/search/**")
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated();
-//        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }
 

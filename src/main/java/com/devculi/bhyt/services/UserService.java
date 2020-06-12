@@ -24,14 +24,11 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userRepository.findUserByEmail(customUserDetails.getUsername());
-        System.out.println(user);
-        return UserDTO.builder().email(user.getEmail()).role(user.getRole()).build();
+        return UserDTO.builder().email(user.getEmail()).role(user.getRole()).token("tokenforadmin").build();
     }
 
     public Authentication authenticate(String username, String password) {
         return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
     }
-
-
 }

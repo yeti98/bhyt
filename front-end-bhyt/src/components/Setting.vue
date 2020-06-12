@@ -5,6 +5,7 @@
 <script>
   import {RepositoryFactory} from '@/repositories/RepositoryFactory'
   import GroupSetting from "./GroupSetting";
+  import {ON_FAILURE_MESSAGE, ON_SAVED_MESSAGE} from "../javascript/api_messages";
 
   const SettingRepository = RepositoryFactory.get('setting');
   export default {
@@ -14,9 +15,9 @@
       handleSubmit(name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
-            this.$Message.success('Đã lưu!');
+            this.$Message.success(ON_SAVED_MESSAGE);
           } else {
-            this.$Message.error('Không thành công!');
+            this.$Message.error(ON_FAILURE_MESSAGE);
           }
         })
       }

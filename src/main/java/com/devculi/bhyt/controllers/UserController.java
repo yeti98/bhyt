@@ -15,7 +15,6 @@ public class UserController {
     UserService userService;
     @PostMapping("/login")
     public Object login(@RequestBody LoginRequest loginRequest){
-        System.out.println("HERE");
         return userService.login(loginRequest.getEmail(), loginRequest.getPassword());
     }
 }

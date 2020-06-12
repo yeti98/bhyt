@@ -1,2 +1,6 @@
-const ON_SUCCESS_MESSAGE="Thành công."
-const ON_FAILURE_MESSAGE="Vui lòng thử lại."
+export const ON_SUCCESS_MESSAGE="Thành công."
+export const ON_FAILURE_MESSAGE="Không thành công. Vui lòng thử lại."
+export const ON_LOGIN_FAIL="Tên đăng nhập hoặc mật khẩu không đúng!"
+export const ON_SAVED_MESSAGE="Lưu thành công"
+export const ON_INVALID_DATA="Dữ liệu chưa hợp lệ!"
+export const ON_NOINTERNET_CONNECTION="Vui lòng kiểm tra kết nối internet"

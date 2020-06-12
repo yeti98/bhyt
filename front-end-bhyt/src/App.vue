@@ -1,9 +1,12 @@
 <template>
   <div id="app">
-    <div style="padding: 20%;" v-if="showLogin">
-      <Login @LoggedIn="showLogin=!showLogin"></Login>
+    <div style="padding: 20%;" v-if="!isLoggedIn">
+      <Login></Login>
     </div>
     <DashBoard v-else></DashBoard>
+    <div class="footer">
+      <p>Copyright © 2020 N08. All rights reserved</p>
+    </div>
   </div>
 </template>
 
@@ -16,9 +19,13 @@ export default {
   components: {
     Login, DashBoard
   },
+  computed: {
+    isLoggedIn: function() {
+      return this.$store.getters.isLoggedIn;
+    }
+  },
   data () {
     return {
-        showLogin: true
     }
   },
 }
@@ -32,4 +39,13 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+ .footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: gray;
+   color: white;
+   text-align: center;
+ }
 </style>

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @RestController
@@ -24,5 +25,14 @@ public class BillController {
         LocalDateTime endDateTime = Instant.ofEpochMilli(end).atZone(ZoneId.systemDefault()).toLocalDateTime();
         System.out.println(startDateTime + "\n" + endDateTime);
         return billService.buildStatisticalMap(startDateTime, endDateTime);
+    }
+
+    @GetMapping("/analyzer/annual")
+    public List analyzeBillByYear(@RequestParam(name = "range", defaultValue = "5") Integer range) {
+        LocalDateTime endDateTime = LocalDateTime.now();
+        System.out.println(endDateTime);
+        LocalDateTime startDateTime = endDateTime.minusYears(range).with(TemporalAdjusters.firstDayOfYear());
+        System.out.println(startDateTime + "\n" + endDateTime);
+        return billService.buildStatisticalForYears(startDateTime, endDateTime);
     }
 }

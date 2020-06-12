@@ -36,6 +36,7 @@
 <script>
   import CalculatorType from "./CalculatorType";
   import {RepositoryFactory} from '@/repositories/RepositoryFactory'
+  import {ON_FAILURE_MESSAGE, ON_SUCCESS_MESSAGE} from "../javascript/api_messages";
   const GroupRepository = RepositoryFactory.get('group');
   export default {
     name: "GroupDetail",
@@ -99,16 +100,16 @@
               this.updateCategory()
             }
           } else {
-            this.$Message.error('Dữ liệu chưa hợp lệ!');
+            this.$Message.error();
           }
         })
       },
       async updateCategory() {
         const res = await GroupRepository.updateCategory(this.group.id, this.group)
         if (res.status < 200 || res.status > 299) {
-          this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+          this.$Message.error(ON_FAILURE_MESSAGE);
         } else {
-          this.$Message.success('Thành công!');
+          this.$Message.success(ON_SUCCESS_MESSAGE);
           this.$emit('updateGroupSuccess')
           this.$Modal.remove();
         }
@@ -116,11 +117,16 @@
       async insertCategory() {
         const res = await GroupRepository.insertCategory(this.group)
         if (res.status < 200 || res.status > 299) {
-          this.$Message.error(`Vui lòng thử lại! ${res.status}`);
+          this.$Message.error(ON_FAILURE_MESSAGE);
         } else {
-          this.$Message.success('Thành công!');
+          this.$Message.success(ON_SUCCESS_MESSAGE);
           this.$emit('insertGroupSuccess', res.data)
           this.$Modal.remove();
+        }
+      },
+      onEnterKeyPressed(event) {
+        if (event.key === 'Enter') {
+          this.handleSubmit('tblGroup');
         }
       }
     },
@@ -136,17 +142,19 @@
       }
     },
     mounted() {
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          this.handleSubmit('tblGroup');
+
+    },
+      activated() {
+        window.addEventListener('keydown', this.onEnterKeyPressed);
+        if (this.isNew) {
+            this.$refs.focusCode.focus()
+        } else {
+            this.$refs.focusName.focus()
         }
-      });
-      if (this.isNew) {
-          this.$refs.focusCode.focus()
-      } else {
-          this.$refs.focusName.focus()
+      },
+      deactivated() {
+        window.removeEventListener('keydown', this.onEnterKeyPressed);
       }
-    }
   }
 </script>
 
